@@ -2,6 +2,8 @@ const Twitter = require('twitter');
 
 const config = require('./config/config');
 
+// console.log('config ', JSON.stringify(config, null, 2));
+
 const client = new Twitter(config);
 
 const favoritesData = require('../twitter-data/like');
@@ -13,6 +15,21 @@ function wait(delay) {
     setTimeout(() => {
       resolve();
     }, delay);
+  });
+}
+
+function getFavorites(count) {
+  return new Promise((resolve, reject) => {
+    client.get('favorites/list', {count}, function(error, tweets, response) {
+      console.log(`getFavorites count ${count} tweets: ${JSON.stringify(tweets, null, 2)}`);
+      console.log(`getFavorites count ${count} response: ${JSON.stringify(response, null, 2)}`);
+      if(error) {
+        console.log(`getFavorites error: ${JSON.stringify(error, null, 2)}`);
+        return reject(error);
+      };
+
+      return resolve(tweets);
+    });
   });
 }
 
@@ -96,4 +113,14 @@ async function processUnfavoriteTweets(favoritesData, delay) {
 
 // throttleUnFavoriteTweet('583328954968371200', 60 * 1000);
 
-processUnfavoriteTweets(favoritesData, 60 * 1000);
+// processUnfavoriteTweets(favoritesData, 60 * 1000);
+
+// getFavorites(10);
+
+client.get('favorites/list', { count: 10, user_id: 283941500 }, function(error, tweets, response) {
+  if(error) {
+
+  }
+  console.log(tweets);  // The favorites.
+  // console.log(response);  // Raw response object.
+});
